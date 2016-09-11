@@ -1,3 +1,17 @@
+/*
+ *   Analog PIR motion detection
+ *   
+ *   Uses the standard HC-SR501 or any motion sensor using the BISS0001 chip
+ *   
+ *   To acquire the analog signal you need to solder a wire to PIN 12 of the BISS0001 chip. 
+ *   Pin 12 is the Analog Output from an Op-amp ... at 0 to 3.3v 
+ *   
+ *   No motion: ~ 1.65v
+ *   
+ *   Motion: 0v to 3.3v
+ * 
+ *   As motion takes place, the analog signal will reflect the motion it sees.
+ */
 int pirPin=0; 
 int value=0; 
 int motion_status = 0;
@@ -11,6 +25,7 @@ boolean SHOW_DEBUG = true;
 void setup() 
 { 
   Serial.begin(115200); 
+  // For Arduino Boards with External ARef 
   analogReference(EXTERNAL);
   pinMode(pirPin, INPUT); 
 }
@@ -42,13 +57,14 @@ void loop()
         Serial.println("Motion started");
         motion_trigger = 1;
       }
-      
+
+      inv_val = 1200 - value;
+      tmp_val = value;
+      tmp_val = tmp_val / res;
+      inv_val = inv_val / res;
+        
       if (SHOW_DEBUG)
       {
-        inv_val = 1200 - value;
-        tmp_val = value;
-        tmp_val = tmp_val / res;
-        inv_val = inv_val / res;
         Serial.print("[" + String(value) + "] ");
       }
 
